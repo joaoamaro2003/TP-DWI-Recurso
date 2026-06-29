@@ -1,6 +1,5 @@
-// Variáveis
-
 let pokemonAtual;
+let respostaEvolucao = "";
 
 let vidas = 3;
 let pontos = 0;
@@ -8,8 +7,6 @@ let tempo = 30;
 let contador;
 
 let historico = [];
-
-// Elementos da página
 
 let vidasSpan = document.getElementById("vidas");
 let pontosSpan = document.getElementById("pontos");
@@ -34,8 +31,6 @@ let infoModo = document.getElementById("infoModo");
 let pista = document.getElementById("pista");
 let opcoes = document.getElementById("opcoes");
 
-// Carregar dados guardados
-
 let dados = localStorage.getItem("jogo");
 
 if (dados) {
@@ -48,8 +43,6 @@ if (dados) {
   pontosSpan.innerHTML = pontos;
 }
 
-// Guardar jogo
-
 function guardarDados() {
   let jogo = {
     vidas: vidas,
@@ -59,8 +52,6 @@ function guardarDados() {
   localStorage.setItem("jogo", JSON.stringify(jogo));
 }
 
-// Guardar nome e dificuldade
-
 btnGuardar.addEventListener("click", function () {
   localStorage.setItem("nome", nomeJogador.value);
 
@@ -69,8 +60,6 @@ btnGuardar.addEventListener("click", function () {
   alert("Dados guardados!");
 });
 
-// Mostrar nome guardado
-
 if (localStorage.getItem("nome")) {
   nomeJogador.value = localStorage.getItem("nome");
 }
@@ -78,8 +67,6 @@ if (localStorage.getItem("nome")) {
 if (localStorage.getItem("dificuldade")) {
   dificuldade.value = localStorage.getItem("dificuldade");
 }
-
-// Buscar Pokémon
 
 function novoPokemon() {
   let maximo = Number(dificuldade.value);
@@ -109,21 +96,64 @@ function novoPokemon() {
     });
 }
 
-// Mostrar Pokémon
 function mostrarPokemon() {
   pokemonImg.classList.remove("silhueta");
 }
 
-// Verificar resposta
-
 function verificarResposta() {
-  let resposta = respostaInput.value.toLowerCase();
+  let resposta = respostaInput.value.toLowerCase().trim();
+
+  if (modo.value == "evolucao") {
+    if (resposta == respostaEvolucao) {
+      mostrarPokemon();
+
+      pontos = pontos + 100;
+      pontosSpan.innerHTML = pontos;
+
+      mensagem.innerHTML = "Acertaste!";
+
+      clearInterval(contador);
+
+      guardarDados();
+      guardarHistorico();
+
+      setTimeout(function () {
+        novoPokemon();
+      }, 1500);
+    } else {
+      vidas--;
+      vidasSpan.innerHTML = vidas;
+
+      mensagem.innerHTML = "Errado!";
+
+      guardarDados();
+
+      if (vidas <= 0) {
+        clearInterval(contador);
+
+        alert("Fim do jogo!");
+
+        vidas = 3;
+        pontos = 0;
+
+        vidasSpan.innerHTML = vidas;
+        pontosSpan.innerHTML = pontos;
+
+        guardarDados();
+
+        setTimeout(function () {
+          novoPokemon();
+        }, 1000);
+      }
+    }
+
+    return;
+  }
 
   if (resposta == pokemonAtual.name) {
     mostrarPokemon();
 
     pontos = pontos + 100;
-
     pontosSpan.innerHTML = pontos;
 
     mensagem.innerHTML = "Acertaste!";
@@ -131,7 +161,6 @@ function verificarResposta() {
     clearInterval(contador);
 
     guardarDados();
-
     guardarHistorico();
 
     setTimeout(function () {
@@ -139,7 +168,6 @@ function verificarResposta() {
     }, 1500);
   } else {
     vidas--;
-
     vidasSpan.innerHTML = vidas;
 
     mensagem.innerHTML = "Errado!";
@@ -159,17 +187,16 @@ function verificarResposta() {
 
       guardarDados();
 
-      novoPokemon();
+      setTimeout(function () {
+        novoPokemon();
+      }, 1000);
     }
   }
 }
 
-// Dar pista
 function darPista() {
   alert("Primeira letra: " + pokemonAtual.name[0]);
 }
-
-// Temporizador
 
 function iniciarTempo() {
   clearInterval(contador);
@@ -213,8 +240,6 @@ function iniciarTempo() {
   }, 1000);
 }
 
-// Histórico
-
 function guardarHistorico() {
   let linha = {
     jogador: nomeJogador.value,
@@ -242,11 +267,18 @@ function mostrarHistorico() {
       "<td>" +
       historico[i].pontos +
       "</td>" +
+      "<td>" +
+      historico[i].modo +
+      "</td>" +
+      "<td>" +
+      historico[i].dificuldade +
+      "</td>" +
+      "<td>" +
+      historico[i].data +
+      "</td>" +
       "</tr>";
   }
 }
-
-// Exportar CSV
 
 btnCSV.addEventListener("click", function () {
   let texto = "Jogador,Pontos,Modo,Dificuldade,Data\n";
@@ -270,13 +302,9 @@ btnCSV.addEventListener("click", function () {
   link.click();
 });
 
-// Eventos
-
 btnResponder.addEventListener("click", verificarResposta);
 
 btnPista.addEventListener("click", darPista);
-
-// Enter e H
 
 document.addEventListener("keydown", function (event) {
   if (event.key == "Enter") {
@@ -288,28 +316,27 @@ document.addEventListener("keydown", function (event) {
   }
 });
 
-// Iniciar jogo
 novoPokemon();
 
 function aplicarModo() {
   let m = modo.value;
 
-  // Aleatório
   if (m == "aleatorio") {
     let modos = ["silhueta", "estatisticas", "tipo", "evolucao"];
 
     m = modos[Math.floor(Math.random() * modos.length)];
+
+    modo.value = m;
   }
 
   infoModo.innerHTML = "Modo: " + m;
 
-  // SILHUETA
   if (m == "silhueta") {
     pokemonImg.classList.add("silhueta");
-    pista.innerHTML = "Adivinha pela imagem desfocada.";
+
+    pista.innerHTML = "Adivinha pela imagem.";
   }
 
-  // ESTATISTICAS
   if (m == "estatisticas") {
     pokemonImg.classList.remove("silhueta");
 
@@ -320,17 +347,39 @@ function aplicarModo() {
       pokemonAtual.stats[1].base_stat;
   }
 
-  // TIPO
   if (m == "tipo") {
     pokemonImg.classList.remove("silhueta");
 
     pista.innerHTML = "Tipo: " + pokemonAtual.types[0].type.name;
   }
 
-  // EVOLUCAO (versão simples)
   if (m == "evolucao") {
     pokemonImg.classList.remove("silhueta");
 
-    pista.innerHTML = "Qual é a evolução deste Pokémon?";
+    pista.innerHTML = "Escreve a evolução deste Pokémon.";
+
+    respostaEvolucao = "";
+
+    fetch("https://pokeapi.co/api/v2/pokemon-species/" + pokemonAtual.id)
+      .then(function (resposta) {
+        return resposta.json();
+      })
+
+      .then(function (species) {
+        fetch(species.evolution_chain.url)
+          .then(function (resposta) {
+            return resposta.json();
+          })
+
+          .then(function (evolucao) {
+            let cadeia = evolucao.chain;
+
+            if (cadeia.evolves_to.length > 0) {
+              respostaEvolucao = cadeia.evolves_to[0].species.name;
+            } else {
+              respostaEvolucao = pokemonAtual.name;
+            }
+          });
+      });
   }
 }

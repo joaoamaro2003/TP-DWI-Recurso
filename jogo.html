@@ -19,10 +19,47 @@
         <a href="ranking.html">Ranking</a>
         <a href="pokedex.html">Pokédex</a>
         <a href="faq.html">FAQ</a>
+        <a href="privacidade.html">Privacidade</a>
       </nav>
     </header>
 
     <main class="container">
+      <h2>Definições</h2>
+
+      <form>
+        <label>Nome do Jogador</label><br />
+        <input type="text" id="nomeJogador" required />
+
+        <br /><br />
+
+        <label>Dificuldade</label><br />
+
+        <select id="dificuldade">
+          <option value="151">Fácil</option>
+          <option value="251">Médio</option>
+          <option value="1025">Difícil</option>
+        </select>
+
+        <br /><br />
+
+        <h3>Modo de Jogo</h3>
+
+        <select id="modo">
+          <option value="silhueta">Silhueta</option>
+          <option value="estatisticas">Estatísticas</option>
+          <option value="tipo">Tipo + Geração</option>
+          <option value="evolucao">Cadeia Evolutiva</option>
+          <option value="aleatorio">Aleatório</option>
+        </select>
+
+        <br /><br />
+
+        <button type="button" id="btnGuardar">Guardar</button>
+      </form>
+
+      <hr />
+      <br />
+
       <section class="jogo">
         <h2>Adivinha o Pokémon</h2>
 
@@ -32,22 +69,46 @@
           <p><strong>Tempo:</strong> <span id="tempo">30</span></p>
         </div>
 
+        <p id="infoModo"></p>
+
         <img id="pokemon" src="" alt="Pokemon" />
+
+        <p id="pista"></p>
+
+        <div id="opcoes"></div>
 
         <div class="formulario">
           <input type="text" id="resposta" placeholder="Nome do Pokémon" />
 
           <br /><br />
 
-          <button id="btnResponder">Responder</button>
+          <button type="button" id="btnResponder">Responder</button>
 
-          <button id="btnPista">Pista</button>
+          <button type="button" id="btnPista">Pista</button>
         </div>
 
         <br />
 
         <p id="mensagem"></p>
       </section>
+
+      <hr />
+      <br />
+
+      <h2>Histórico</h2>
+
+      <table border="1">
+        <tr>
+          <th>Jogador</th>
+          <th>Pontos</th>
+        </tr>
+
+        <tbody id="historico"></tbody>
+      </table>
+
+      <br />
+
+      <button type="button" id="btnCSV">Exportar CSV</button>
     </main>
 
     <footer>

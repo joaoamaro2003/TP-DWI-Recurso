@@ -41,12 +41,17 @@ if (dados) {
 
   vidasSpan.innerHTML = vidas;
   pontosSpan.innerHTML = pontos;
+
+  if (dados.modo) {
+    modo.value = dados.modo;
+  }
 }
 
 function guardarDados() {
   let jogo = {
     vidas: vidas,
     pontos: pontos,
+    modo: modo.value,
   };
 
   localStorage.setItem("jogo", JSON.stringify(jogo));
@@ -92,6 +97,7 @@ function novoPokemon() {
       mensagem.innerHTML = "";
 
       iniciarTempo();
+
       aplicarModo();
     });
 }
